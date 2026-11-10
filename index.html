@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cognitive Agent Skills Hub · 高阶认知与思维技能套件</title>
+<meta name="description" content="面向智能体与开发者的三大高阶认知 Skill：苏格拉底错因启发助教、Felix 四维任务升维编译器、框架粉碎反击护盾。" />
+<style>
+  :root {
+    --bg: #0b0f17;
+    --panel: #131b2a;
+    --panel-sub: #1a2438;
+    --border: #233047;
+    --text: #f0f4fc;
+    --muted: #8c9cb8;
+    --accent: #38bdf8;
+    --accent-glow: rgba(56, 189, 248, 0.15);
+    --socratic: #34d399;
+    --ambitious: #f59e0b;
+    --breaker: #f43f5e;
+    --mono: "SF Mono", Monaco, Consolas, "Liberation Mono", Courier, monospace;
+    --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; padding: 0;
+    background: var(--bg); color: var(--text);
+    font-family: var(--font); line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  header {
+    background: linear-gradient(180deg, rgba(19, 27, 42, 0.95) 0%, rgba(11, 15, 23, 0.9) 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 36px 24px 28px; text-align: center;
+    position: relative;
+  }
+  .tagline {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 12px; font-family: var(--mono);
+    color: var(--accent); background: var(--accent-glow);
+    padding: 4px 12px; border-radius: 999px; margin-bottom: 14px;
+    border: 1px solid rgba(56, 189, 248, 0.3);
+  }
+  h1 { margin: 0 0 10px; font-size: 32px; font-weight: 800; letter-spacing: -0.02em; }
+  .subtitle { max-width: 680px; margin: 0 auto; color: var(--muted); font-size: 15px; }
+  .header-actions { margin-top: 20px; display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+  .btn-repo {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--panel-sub); color: var(--text); border: 1px solid var(--border);
+    padding: 8px 16px; border-radius: 8px; text-decoration: none; font-size: 13.5px; font-weight: 600;
+    transition: all 0.2s ease;
+  }
+  .btn-repo:hover { border-color: var(--accent); color: var(--accent); }
+
+  main { max-width: 1080px; margin: 0 auto; padding: 28px 20px 80px; }
+  .nav-tabs {
+    display: flex; gap: 10px; border-bottom: 1px solid var(--border);
+    padding-bottom: 12px; margin-bottom: 28px; overflow-x: auto;
+  }
+  .tab-btn {
+    background: var(--panel); border: 1px solid var(--border); color: var(--muted);
+    padding: 10px 18px; border-radius: 10px; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s ease; white-space: nowrap;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .tab-btn:hover { color: var(--text); border-color: #3b4d6b; }
+  .tab-btn.active[data-tab="tutor"] { background: rgba(52, 211, 153, 0.12); color: var(--socratic); border-color: var(--socratic); }
+  .tab-btn.active[data-tab="prompter"] { background: rgba(245, 158, 11, 0.12); color: var(--ambitious); border-color: var(--ambitious); }
+  .tab-btn.active[data-tab="breaker"] { background: rgba(244, 63, 94, 0.12); color: var(--breaker); border-color: var(--breaker); }
+
+  .skill-panel { display: none; }
+  .skill-panel.active { display: block; animation: fadeIn 0.25s ease-out; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+  .card-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 24px; }
+  @media (max-width: 840px) { .card-grid { grid-template-columns: 1fr; } }
+
+  .box {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 14px;
+    padding: 22px; display: flex; flex-direction: column;
+  }
+  .box-title { margin: 0 0 8px; font-size: 18px; font-weight: 700; display: flex; align-items: center; justify-content: space-between; }
+  .badge { font-size: 11px; padding: 2px 8px; border-radius: 6px; font-family: var(--mono); text-transform: uppercase; font-weight: 700; }
+  .badge-tutor { background: rgba(52, 211, 153, 0.15); color: var(--socratic); }
+  .badge-prompter { background: rgba(245, 158, 11, 0.15); color: var(--ambitious); }
+  .badge-breaker { background: rgba(244, 63, 94, 0.15); color: var(--breaker); }
+
+  .box-desc { font-size: 13.5px; color: var(--muted); margin: 0 0 16px; }
+
+  label { display: block; font-size: 12.5px; font-weight: 600; color: var(--muted); margin-bottom: 6px; }
+  textarea, input {
+    width: 100%; background: var(--panel-sub); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text); padding: 10px 12px; font-size: 13.5px;
+    font-family: inherit; margin-bottom: 14px; transition: border 0.15s;
+  }
+  textarea:focus, input:focus { outline: none; border-color: var(--accent); }
+  textarea { min-height: 110px; resize: vertical; }
+
+  .btn-submit {
+    background: var(--accent); color: #07101e; border: none;
+    padding: 10px 18px; border-radius: 8px; font-weight: 700; font-size: 14px;
+    cursor: pointer; transition: opacity 0.15s; margin-top: auto;
+  }
+  .btn-submit:hover { opacity: 0.9; }
+
+  .output-box {
+    background: var(--panel-sub); border: 1px solid var(--border); border-radius: 10px;
+    padding: 16px; min-height: 260px; font-size: 13.5px; overflow-y: auto;
+    position: relative;
+  }
+  .output-box pre {
+    margin: 0; white-space: pre-wrap; word-wrap: break-word; font-family: inherit; line-height: 1.65;
+  }
+  .empty-hint {
+    height: 200px; display: flex; align-items: center; justify-content: center;
+    color: var(--muted); font-size: 13px; text-align: center;
+  }
+
+  .copy-btn {
+    position: absolute; top: 12px; right: 12px;
+    background: var(--panel); border: 1px solid var(--border); color: var(--muted);
+    padding: 4px 10px; border-radius: 6px; font-size: 11px; cursor: pointer;
+  }
+  .copy-btn:hover { color: var(--text); border-color: var(--accent); }
+
+  .preset-row { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 14px; }
+  .preset-chip {
+    background: var(--panel-sub); border: 1px solid var(--border); color: var(--muted);
+    font-size: 11.5px; padding: 4px 10px; border-radius: 6px; cursor: pointer; transition: .15s;
+  }
+  .preset-chip:hover { color: var(--text); border-color: var(--muted); }
+
+  footer {
+    text-align: center; font-size: 13px; color: var(--muted);
+    padding: 30px; border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="tagline">✦ AGENTIC COGNITIVE SKILLS FOR ANTHROPIC CLAUDE CODE & ANTIGRAVITY</div>
+  <h1>Cognitive Agent Skills Hub</h1>
+  <p class="subtitle">提炼自真实认知方法论的三大开箱即用高阶智能体技能包：拒绝假性学会的苏格拉底教学、打破平庸的四维雄心任务升维、另辟战线的框架粉碎反击护盾。</p>
+  <div class="header-actions">
+    <a class="btn-repo" href="https://github.com/vivian571/cognitive-skills-pack" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+      GitHub 仓库
+    </a>
+    <a class="btn-repo" href="#install-guide" onclick="alert('运行命令:\ngit clone https://github.com/vivian571/cognitive-skills-pack\n即可在任何支持 Agent Skills 的环境中直接调用！'); return false;">
+      ⚡ 一键安装说明
+    </a>
+  </div>
+</header>
+
+<main>
+  <div class="nav-tabs">
+    <button class="tab-btn active" data-tab="tutor">
+      🎓 socratic-tutor (苏格拉底助教)
+    </button>
+    <button class="tab-btn" data-tab="prompter">
+      🚀 ambitious-prompter (四维雄心编译器)
+    </button>
+    <button class="tab-btn" data-tab="breaker">
+      🛡️ frame-breaker (框架粉碎反击护盾)
+    </button>
+  </div>
+
+  <!-- TAB 1: SOCRATIC TUTOR -->
+  <div class="skill-panel active" id="tab-tutor">
+    <div class="card-grid">
+      <div class="box">
+        <div class="box-title">
+          <span>错因诊断与启发引导</span>
+          <span class="badge badge-tutor">Socratic Engine</span>
+        </div>
+        <p class="box-desc">严禁直接给答案。通过定位思维断点、阶梯式降维、单步提问唤醒孩子自主推导，并在解出后生成闭环变式题。</p>
+
+        <label>快速填入真实错题情景：</label>
+        <div class="preset-row">
+          <span class="preset-chip" onclick="fillTutor(1)">分式方程无解误区</span>
+          <span class="preset-chip" onclick="fillTutor(2)">负数乘法符号困惑</span>
+          <span class="preset-chip" onclick="fillTutor(3)">一元一次方程移项漏变号</span>
+        </div>
+
+        <label>学习者的错题与卡点描述：</label>
+        <textarea id="tutorInput" placeholder="例如：孩子在解 x/(x-1) - 1 = 3/[(x-1)(x+2)] 时，两边去分母后解出 x=1，但他不知道为什么标准答案是无解，感到非常沮丧。"></textarea>
+
+        <button class="btn-submit" onclick="runTutor()" style="background: var(--socratic); color: #022c22;">启动苏格拉底错因启发</button>
+      </div>
+
+      <div class="box">
+        <div class="box-title">
+          <span>启发式对话流与变式题</span>
+          <span class="badge badge-tutor">Ready Output</span>
+        </div>
+        <div class="output-box" id="tutorOutput">
+          <button class="copy-btn" onclick="copyOutput('tutorOutput')">复制话术</button>
+          <div class="empty-hint">在左侧输入错题或点击预设案例，即可查看苏格拉底阶梯启发步骤与变式题目。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 2: AMBITIOUS PROMPTER -->
+  <div class="skill-panel" id="tab-prompter">
+    <div class="card-grid">
+      <div class="box">
+        <div class="box-title">
+          <span>Felix 四维任务升维</span>
+          <span class="badge badge-prompter">Ambitious Meta-Compiler</span>
+        </div>
+        <p class="box-desc">跳出“速度层”求快的误区。将平庸指令重构为：高度（战略动词）、范围（跨界方法论+红队）、深度（专家四连问门禁）。</p>
+
+        <label>快速填入日常平庸需求：</label>
+        <div class="preset-row">
+          <span class="preset-chip" onclick="fillPrompter(1)">根据资料做销售PPT</span>
+          <span class="preset-chip" onclick="fillPrompter(2)">写一份竞品分析报告</span>
+          <span class="preset-chip" onclick="fillPrompter(3)">帮我设计一个AI学习助手</span>
+        </div>
+
+        <label>你原本打算发给 AI 的粗糙需求：</label>
+        <textarea id="prompterInput" placeholder="例如：帮我整理一下最近三个月的用户流失数据，做一份能向老板汇报的分析 PPT。"></textarea>
+
+        <button class="btn-submit" onclick="runPrompter()" style="background: var(--ambitious); color: #2e1700;">升维编译为工业级 Prompt</button>
+      </div>
+
+      <div class="box">
+        <div class="box-title">
+          <span>四维升维指令包 (Compiled Directive)</span>
+          <span class="badge badge-prompter">Ready Output</span>
+        </div>
+        <div class="output-box" id="prompterOutput">
+          <button class="copy-btn" onclick="copyOutput('prompterOutput')">复制指令包</button>
+          <div class="empty-hint">输入任何平庸需求，立即为你升维编译为带有战略目的、跨界工具与红队检验的专家级指令包。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 3: FRAME BREAKER -->
+  <div class="skill-panel" id="tab-breaker">
+    <div class="card-grid">
+      <div class="box">
+        <div class="box-title">
+          <span>框架粉碎与辩论反击</span>
+          <span class="badge badge-breaker">Anti-Frame Shield</span>
+        </div>
+        <p class="box-desc">永不在对方设定的战场上防守！运用类比反射、借力打力、放大荒谬、身份置换、定义反转 5 大重构策略秒破评价陷阱。</p>
+
+        <label>快速填入常见刁难或道德绑架：</label>
+        <div class="preset-row">
+          <span class="preset-chip" onclick="fillBreaker(1)">你化妆是遮丑吗</span>
+          <span class="preset-chip" onclick="fillBreaker(2)">嫌吵你怎么不去包机</span>
+          <span class="preset-chip" onclick="fillBreaker(3)">你衣服看起来真廉价</span>
+          <span class="preset-chip" onclick="fillBreaker(4)">年轻人怎么一点奉献精神都没有</span>
+        </div>
+
+        <label>对方说出的刁难、挑衅或道德绑架话术：</label>
+        <textarea id="breakerInput" placeholder="例如：你每天踩点下班，是不是对公司根本没有归属感和奉献精神？"></textarea>
+
+        <button class="btn-submit" onclick="runBreaker()" style="background: var(--breaker); color: #fff;">执行 5 维框架粉碎与反击</button>
+      </div>
+
+      <div class="box">
+        <div class="box-title">
+          <span>5 维反击矩阵与 3 档烈度推荐</span>
+          <span class="badge badge-breaker">Ready Output</span>
+        </div>
+        <div class="output-box" id="breakerOutput">
+          <button class="copy-btn" onclick="copyOutput('breakerOutput')">复制反击矩阵</button>
+          <div class="empty-hint">输入对方的发难话术，立即生成病理诊断、五种重构战术与三档不同烈度的现成破局话术。</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p>Cognitive Agent Skills Hub · Released under MIT License © 2026 Vivian571<br>Compatible with Anthropic Claude Code, Antigravity, Cursor, Codex & Dify</p>
+</footer>
+
+<script>
+// Tabs logic
+const tabs = document.querySelectorAll('.tab-btn');
+tabs.forEach(btn => {
+  btn.addEventListener('click', () => {
+    tabs.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const target = btn.dataset.tab;
+    document.querySelectorAll('.skill-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById(`tab-${target}`).classList.add('active');
+  });
+});
+
+// Copy helper
+function copyOutput(id) {
+  const el = document.getElementById(id);
+  const text = el.innerText.replace('复制话术', '').replace('复制指令包', '').replace('复制反击矩阵', '').trim();
+  navigator.clipboard.writeText(text).then(() => {
+    alert('已复制到剪贴板！');
+  });
+}
+
+// Preset Fillers
+function fillTutor(type) {
+  const map = {
+    1: "孩子在解分式方程 x/(x-1) - 1 = 3/[(x-1)(x+2)] 时，两边去分母后解出 x=1，但他不知道为什么标准答案是无解，感到非常沮丧。",
+    2: "孩子学到负负得正时一直转不过弯，问我：为什么 -3 乘以 -2 会变成正 6？负的遇到负的怎么会变多？",
+    3: "孩子做一元一次方程移项：把 3x - 5 = x + 7 移项成 3x + x = 7 - 5，多次强调移项要变号但总是漏掉。"
+  };
+  document.getElementById('tutorInput').value = map[type];
+}
+
+function fillPrompter(type) {
+  const map = {
+    1: "根据过去三个月的销售明细数据，帮我做一份能向公司管理层汇报的 PPT 分析。",
+    2: "帮我写一份关于当前主流大语言模型在端侧运行工具的竞品分析报告。",
+    3: "帮我设计一个让中小学生能自主使用的 AI 错题本辅导工具方案。"
+  };
+  document.getElementById('prompterInput').value = map[type];
+}
+
+function fillBreaker(type) {
+  const map = {
+    1: "你每天化妆化这么浓，是不是卸了妆根本没法见人，用来遮丑的？",
+    2: "嫌高铁车厢里小孩吵，你怎么不去坐一等座或者自己包飞机呢？",
+    3: "你身上这套衣服版型这么垮，看起来也就几十块钱的地摊廉价货吧？",
+    4: "现在的年轻人怎么一点加班奉献精神都没有，一到点就关电脑跑路？"
+  };
+  document.getElementById('breakerInput').value = map[type];
+}
+
+// Execution Simulators
+function runTutor() {
+  const val = document.getElementById('tutorInput').value.trim();
+  if (!val) { alert('请先输入错题情景！'); return; }
+  
+  document.getElementById('tutorOutput').innerHTML = `
+    <button class="copy-btn" onclick="copyOutput('tutorOutput')">复制话术</button>
+    <pre>
+【第一阶段：断点诊断 (Step Diagnosis)】
+✓ 肯定闪光点：学习者能熟练执行去分母和移项求解，代数方程的基本解题流程非常扎实。
+⚠️ 思维断点定位：遗漏了分式方程最本质的定义域限制——分母不能为 0（增根陷阱）。
+
+【第二阶段：阶梯降维启发 (Scaffolding Down)】
+👉 第一步回复（单步提问，绝不透露答案）：
+“前两步你两边同时去分母、移项求解的速度非常快，计算能力完全没问题！
+不过我们先别管后面复杂的代数计算，请你回头盯紧原方程最初的形式：
+如果把算出来的 x = 1 重新放回第一个分式 x / (x - 1) 的分母里，分母变成了多少？
+在小学和初中数学里，除数（分母）能等于这个数吗？”
+
+【第三阶段：预测后续引导链路】
+- 若孩子回答“分母变成0了，0不能做除数！”
+  ➔ 追问：“太棒了！既然分母变成0在数学中没有意义，那这个 x=1 还能算作原方程的合法解吗？”
+- 若孩子犹豫
+  ➔ 降维类比：“如果把 6 块蛋糕平均分给 0 个人，每人分到几块？是不是根本没法分？”
+
+【第四阶段：同类变式闭环题 (Variant Validation Gate)】
+“完全弄懂这个原理后，检验你是不是真的掌握了增根探测器！试试看这道变式题：
+解方程：(x - 2) / (x - 3) + 2 = 1 / (x - 3)
+看看最后算出来的解，能通过分母安全检查吗？”
+    </pre>
+  `;
+}
+
+function runPrompter() {
+  const val = document.getElementById('prompterInput').value.trim();
+  if (!val) { alert('请先输入任务需求！'); return; }
+
+  document.getElementById('prompterOutput').innerHTML = `
+    <button class="copy-btn" onclick="copyOutput('prompterOutput')">复制指令包</button>
+    <pre>
+【Felix 四维升维重构结果】
+
+1. 高度升维 (Height: 名词 ➔ 战略决策动词)
+--------------------------------------------------
+原指令：“${val}”
+升维后：“在 30 分钟内向核心决策层清晰穿透数据表象，锁定最致命的流失归因链，并明确下季度预算重配与止血行动的决断依据”。
+
+2. 范围扩充 (Scope: 跨界专业方法论，禁模仿语气)
+--------------------------------------------------
+强制调用以下两组专业研究模型：
+- 数据分析师视角：采用同期群流失漏斗（Cohort Retention）、帕累托 80/20 根因归因与 LTV 衰减测算；
+- 做空机构/法务会计红队视角：反向审计数据采样的幸存者偏差、质疑内部业务自圆其说的虚假归因。
+
+3. 深度四连问门禁 (Depth Probe Gatekeeper)
+--------------------------------------------------
+在给出最终交付方案前，回答以下专家质问：
+一、该领域顶尖战略顾问会做哪些我没想到的事？（如：对流失高净值客户进行真实深访盲测，而非只看问卷）
+二、他们会从哪些最底层素材入手？（翻阅真实的客服投诉录音、退费申请原文，而非现成二手图表）
+三、会使用什么同行评审级工具？（归因模型、双重差分法、敏感性压力测试）
+四、除了主观分析，有什么独立指标能证伪结论？（盲测对照组与留存弹性系数测试）
+
+4. 终极执行指令包 (Compiled Prompt)
+--------------------------------------------------
+“请基于以上战略目标与跨界方法论，直接输出包含：
+1. 核心因果链穿透（一句话破除虚假繁荣）；
+2. 红队反向挑战清单（提前拦截管理层最苛刻的质疑）；
+3. 关键资源重配决断表（精准到钱投在哪、人撤出哪）的完整执行报告。”
+    </pre>
+  `;
+}
+
+function runBreaker() {
+  const val = document.getElementById('breakerInput').value.trim();
+  if (!val) { alert('请先输入对方的话术！'); return; }
+
+  document.getElementById('breakerOutput').innerHTML = `
+    <button class="copy-btn" onclick="copyOutput('breakerOutput')">复制反击矩阵</button>
+    <pre>
+【框架病理诊断】
+对方试图通过“${val}”来设定虚假的道德法庭，篡夺评判者地位，将正常的个人界限污名化为缺陷。
+
+【5 维反击矩阵 (Tactical Reframe Matrix)】
+1. 类比反射 (同构归谬，退还尴尬)：
+   “如果准时履约劳动合同叫没有奉献精神，那按你的逻辑，公司准时发工资是不是就算给员工做慈善了？”
+2. 借力打力 (顺应自夸，引向贬损)：
+   “如果低效耗在工位上刷手机叫有归属感，那这种归属感不过是在帮公司平摊无效电费罢了。”
+3. 放大荒谬 (极端推演，以毒攻毒)：
+   “照这个逻辑，是不是谁在公司搭个行军床住一年，谁就能直接当董事长了？”
+4. 身份置换 (拉上审判席，反问资质)：
+   “你今天这么关心别人的下班时间，是因为你今天负责的业务已经没有任何核心产出可以向管理层汇报了吗？”
+5. 定义反转 (重构词义，反向击穿)：
+   “踩点下班不是没有归属感，而是在上班时间内已经高密度交付完了全部工作——只有白天效率低下的人，才需要靠无意义的拖延来表演忠诚。”
+
+【3 档烈度推荐】
+🍃 优雅体面版：“我的工作价值体现在按时高质交付产出上，而不是体现在下班后的无谓表演上。”
+⚡ 犀利防守版：“合同约定的是工作成果，不是无偿的人身买断。效率高的人，不需要用耗时长来假装努力。”
+🔥 极致穿透版：“你既然这么热爱义务奉献，不如把你的月薪也奉献给公司，大家一定敬佩你的归属感。”
+    </pre>
+  `;
+}
+</script>
+</body>
+</html>
